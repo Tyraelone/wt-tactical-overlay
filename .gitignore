@@ -1,0 +1,12 @@
+/bin/
+/dist/
+/user-data/
+/research/
+/tools/python-libs/
+/.vs/
+*.bak
+*.log
+/test-results.json
+/error.log
+/live-api-probe.json
+

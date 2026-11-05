@@ -1,0 +1,4 @@
+using System;using System.IO;using WtTactical;
+class ProbeLiveRecognition{
+ static int Main(string[] a){try{var snapshot=LiveMap.Poll().GetAwaiter().GetResult();var catalog=JsonStore.Load<RecognitionCatalog>(a[0]);var result=MapRecognizer.Recognize(snapshot.Image,catalog);if(a.Length>2)File.WriteAllBytes(a[2],snapshot.Image);var report=new{CapturedAt=DateTimeOffset.Now.ToString("o"),snapshot.Fingerprint,snapshot.ImageFingerprint,snapshot.Session,snapshot.GridView,Result=result};JsonStore.Save(a[1],report);Console.WriteLine("GRID_VALID=true ACCEPTED="+result.Accepted+" MAP="+(result.Match==null?"":result.Match.MapId)+" SCORE="+(result.Match==null?0:result.Match.Score)+" RUNNER="+result.RunnerUp);return 0;}catch(Exception e){JsonStore.Save(a[1],new{CapturedAt=DateTimeOffset.Now.ToString("o"),Error=e.Message});Console.WriteLine(e.Message);return 1;}}
+}

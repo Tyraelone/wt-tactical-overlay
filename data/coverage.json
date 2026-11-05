@@ -1,0 +1,361 @@
+{
+  "GuideMaps": 50,
+  "GuideGaps": {
+    "volokolamsk": [
+      "路线r0与r2只有线路图无文字，不能据颜色推定风险或新阵地。"
+    ],
+    "vietnamhills": [
+      "“最安全”“最佳”等评价未经当前版本验证；r2、r3终点靠近现有高地针点，未重复新增。"
+    ],
+    "tunisia": [
+      "r6无说明；r0/r1终点接近既有p0/p1，r5终点接近p2，未重复新增；所谓核弹/多杀不构成保证。"
+    ],
+    "sweden": [
+      "越界段具体起止没有坐标证据；无法绘制精确禁区边界。"
+    ],
+    "suncity": [
+      "没有路线矢量；水边到达路径和边界起止不能自动补画。"
+    ],
+    "stalingrad": [
+      "r1仅有线路无文字；r0越界段起止未定位，路线警示不等于精确禁区。"
+    ],
+    "spaceport": [
+      "窗口精确朝向、宽度与射界范围没有坐标证据；不绘制火力半径。"
+    ],
+    "sinai": [
+      "r4至r9及r11没有文字；不据颜色补阵地或危险区；r2危险路段未给精确起止。"
+    ],
+    "seversk-13": [
+      "r4至r8无文字；r2仅适用城内单A点布局，未当通用打法或新增固定点。"
+    ],
+    "secondbattleofelalmein": [
+      "r3只有俄文贬词，r4/r5空白，均不足生成战术；“70%视野”等为社区估计，不作为测量范围。"
+    ],
+    "sandsofsinai": [
+      "p1说明中的多个伏击区域、p0所指狙击台圆圈未提供独立坐标，不补画范围；r2终点接近p0，未重复新增。"
+    ],
+    "reddesert": [
+      "没有既有针点；路线仅描述高速包抄，没有明确静态狙击/观察终点，不能虚构固定阵地。"
+    ],
+    "pradesh": [
+      "r2应按火线提示理解；未得到可量化射线宽度或完整火力区边界。"
+    ],
+    "portnovorossiysk": [
+      "r1/r2明确是到既有针点的接近线，不重复新增终点；小窗与源图停车方向未量化。"
+    ],
+    "poland": [
+      "r0终点接近既有p2，未重复新增；r2危险穿越位置无精确起止，保留路线级警示。"
+    ],
+    "normandy": [
+      "r1至r4说明为无意义字符，r5空白；r0仅描述纪念碑绕侧而未明确可固定驻守的终点，未补造狙击点。"
+    ],
+    "mozdok": [
+      "r0绘线被原作者明确提示可能不准确，不能作精确导航；河道通行能力与水深未实测。"
+    ],
+    "middleeast": [
+      "p2停车与探头依赖源图；岩石碰撞、当前出生布局与实际射界未作游戏内验证。"
+    ],
+    "maginotline": [
+      "r0说途中有两个可驻守位置，但没有准确停点或分数，不能假定在终点；r1仅称适合快车，r2空白。"
+    ],
+    "kuban": [
+      "水陆分界、当前水深和浮渡碰撞未量化；社区成功率及击杀上限不作为可靠统计。"
+    ],
+    "karelia": [
+      "r1说明指出常见峡谷北侧进路会被隔岸狙击，但该被批评路线未提供矢量；不能把r1这条推荐掩护线标成同样危险。"
+    ],
+    "jungle": [
+      "没有路线数据；岩后侦察位的观察扇区与C点射界边界未量化，不补造覆盖区。"
+    ],
+    "japan": [
+      "r4只写A点侧绕远射，终点靠近既有p1，未重复加针；r1提到F4/E4沿路角，未给精确停点分数。"
+    ],
+    "iberiancastle": [
+      "多条A/C/出生观察路线终点相邻，但描述目标不同，未重复密铺或假定同模式射界；r0/r3/r8邻近、r1/r4邻近、r2/r5/r7邻近，须核对具体布局与朝向。"
+    ],
+    "goldenquarry": [
+      "r2爬坡终点接近既有p1，不重复加针；r3未给独立固定射界目标，不另补狙击针；陡坡碰撞、边界与当前出生布局未实测。"
+    ],
+    "fulda": [
+      "出生侦测范围、射程和现版本通行性未测量。"
+    ],
+    "frozenpass": [
+      "唯一绕行路线正文仅为“Flank”，不足以定位新增战术终点或专门风险。",
+      "未进行现版本实战核验；无测量射界。"
+    ],
+    "firearc": [
+      "r0正文依赖开局极速抢位，但未明确终点地形，未新增位置。",
+      "未验证所谓稳定战果与现版本出生射线。"
+    ],
+    "finland": [
+      "截图邻车站位未单独提取坐标；保留既有p1位置作为社区参考。",
+      "现版本树木可破坏性与射界未实测。"
+    ],
+    "fieldsofnormandy": [
+      "r3描述道路沿线均可卖头，不能把最后一个折点单独断言为最佳终点，未新增pin。",
+      "出生侦测和现版本射界未验证。"
+    ],
+    "europeanprovince": [
+      "r0为三条连续折线，终点只取r0-2；不得将中途折线末端分别当狙击点。",
+      "出生侦测与两阶段路线终点适用性未实测。"
+    ],
+    "easterneurope": [
+      "p0正文仅“AIM”；r3、r4正文为空，不能推断其用途或危险等级。",
+      "r5仅描述桥梁附近行进间射击，未明确可驻留终点，未新增pin。"
+    ],
+    "carpathians": [
+      "p0描述多个掩体窗口，不能从一个pin推导整片覆盖范围。",
+      "r8为空、r9仅“Spawn Camp”、r10仅“Dottyroute”，未增补终点或风险。",
+      "出生侦测、坡道通行性及现版本射界未实测。"
+    ],
+    "cargoport": [
+      "r5正文为空；r3/r4未给出足够具体的终点地形与射击目标，未新增pin。",
+      "穿透箱体的弹药、箱体碰撞与现版本可见性未实测。"
+    ],
+    "campania": [
+      "r4仅泛称侧后射击收益，未说明具体可驻留终点地形，未增设狙击点。",
+      "现版本布局、侦测和实际射界未验证。"
+    ],
+    "breslau": [
+      "r3正文为空；不依据红色路线自动判定危险。",
+      "r4描述第9路点等待后再前进两个路点，编号与终点对应不明，未硬套Fraction=1。"
+    ],
+    "berlin": [
+      "r0是避开主路高炮火力的掩护替代线；原文未提供主路危险段坐标，不能把掩护线画成火力区。",
+      "r1仅短句、r2拼写简略、r3表示不确定；无可靠终点用途，未新增pin。"
+    ],
+    "battleofhurtgenforest": [
+      "高地复数描述未逐一给出坐标，未增设任意额外山头。",
+      "森林植被和当前版本可通行性未实测。"
+    ],
+    "attica": [
+      "r0、r9、r10、r11正文为空，不能由侧翼线形补造位置或危险。",
+      "r2反狙击目标未唯一对应既有pin，未硬连或另造坐标。",
+      "高地多个射位、距离及现版本路径未实测。"
+    ],
+    "ashriver": [
+      "来源射程为近似数值，未进行测距或射界实测。",
+      "部分高地区域描述非单点，现有坐标只作社区参考。"
+    ],
+    "ardennes": [
+      "p2截图1至4号局部提示没有独立坐标；保留原pin，不凭文字新增四点。",
+      "p1涵盖多个坡脊，未据此批量生成山丘点。",
+      "现版本俯角适配、距离与通行性未实测。"
+    ],
+    "aralsea": [
+      "r5仅说明对C侧大量部署有利，五条折线末端具体用途不明；r6为空、r7仅“Nuke path”，均未增设终点。",
+      "p2缺少来源截图；现版本窗口与可破坏树木未实测。",
+      "r4未指名据点且终点几乎与p2重合，未另增第二个位置或由坐标推定据点。"
+    ],
+    "americandesert": [
+      "r0正文为空。",
+      "r5正文未定位五段线路中的具体暴露间隙，未把任一红色段自动当作危险段。",
+      "地图边界、A点入口唯一性与当前版本射界未实测。"
+    ],
+    "alaska": [
+      "p1、p5缺少截图；p5正文没有明确战术用途，未强行归类为狙击点。",
+      "两栖车型长清单可能随版本变化，本次未当成能力验证。",
+      "r1、r2正文为空；r11仅泛称开局位置好，未增设战术终点。",
+      "r5/r6描述相近的水后区域，本次只记录r6终点以避免重复推导。",
+      "B点建筑破坏性、出生侦测和所述距离均未实测。"
+    ],
+    "advancetotherhine": [
+      "r7、r8、r9、r12为空，r11和r13无战术信息；未据这些线增补用途或危险。",
+      "r5可双向使用但未明确单一驻留终点，r14未给出具体据点或守位，未新增pin。",
+      "越界路线、碎石攀爬、窗口射线与现版本边界未经实测。"
+    ],
+    "abandonedtown": [
+      "p6颜色示意未给各阶段独立坐标，不硬拆成三个pin。",
+      "r8正文为空；r9左右两方案共三条折线，正文与折线末端对应不明确，未新增终点。",
+      "侧爬、登墙、出生侦测及现版本射界均未实测。"
+    ],
+    "abandonedfactory": [
+      "r17正文为空，r15仅一般战果陈述，未据此新增狙击终点。",
+      "具体据点字母未说明的路线保留未指名状态。",
+      "厂房窗口、墙顶炮口高度、围栏破坏与现版本通行性未实测。"
+    ],
+    "whiterockcastle": [
+      "r2仅泛称隐藏，未说明具体射击目标或可确认的狙击用途，未新增pin。",
+      "北侧出生布局、现版本边界与射界未实测。",
+      "r0/r1两个桥面终点及r3终点邻近既有p2的情况已去重，避免虚增独立点位。"
+    ],
+    "flanders": [
+      "r1/r6是行进绕侧路线，正文没有明确单一驻留终点，本次未强行增设。",
+      "p0广阔视线为定性描述，无测量射界或全图火力保证。",
+      "当前版本射界与出生方向机制未实测。"
+    ],
+    "38thparallel": [
+      "p1专用于小图，不可直接用于其他38线布局。",
+      "p8两阶段攀坡没有独立坐标；p11弹药与车型长清单未作当前版本核验。",
+      "r8、r12正文为空；r1沿线射角及r10优先抢行缺少明确驻留终点，未新增pin。",
+      "攀坡、距离、方位与现版本可通行性均未实测。"
+    ]
+  },
+  "AtlasContexts": 146,
+  "RegistrationRejected": [],
+  "SeasonTransfers": [
+    {
+      "Map": "ground-zero",
+      "Summer": "alaska",
+      "Inliers": 571,
+      "Error95": 0.0018106104611903323,
+      "Positions": 28,
+      "Risks": 12
+    },
+    {
+      "Map": "ardennes-winter",
+      "Summer": "ardennes",
+      "Inliers": 347,
+      "Error95": 0.0022172246845538154,
+      "Positions": 8,
+      "Risks": 3
+    },
+    {
+      "Map": "poland-winter",
+      "Summer": "poland",
+      "Inliers": 23,
+      "Error95": 0.003610108628736423,
+      "Positions": 20,
+      "Risks": 15
+    },
+    {
+      "Map": "maginot-winter",
+      "Summer": "maginotline",
+      "Inliers": 532,
+      "Error95": 0.001439714908488466,
+      "Positions": 48,
+      "Risks": 36
+    },
+    {
+      "Map": "seversk-winter",
+      "Summer": "seversk-13",
+      "Inliers": 26,
+      "Error95": 0.0026209679524068635,
+      "Positions": 43,
+      "Risks": 34
+    }
+  ],
+  "ExcludedLevels": [
+    {
+      "LevelId": "avg_football_field",
+      "Name": "Tank Football",
+      "Category": "event_sport",
+      "Source": "https://github.com/gszabi99/War-Thunder-Datamine/blob/2423f3099e2a5ec3f31efdce87b9f4380ea761ec/mis.vromfs.bin_u/gamedata/missions/cta/events/tanks/football/tank_football_tdm.blkx",
+      "Evidence": {
+        "MissionLevel": "levels/avg_football_field.bin",
+        "LocName": "missions/tank_football_Tdm",
+        "LocalizationKey": "missions/tank_football_Tdm",
+        "LocalizationEnglish": "Tank Football"
+      },
+      "TacticalCoverageRequired": false
+    },
+    {
+      "LevelId": "avg_training_ground",
+      "Name": "Shooting Range",
+      "Category": "training",
+      "Source": "https://github.com/gszabi99/War-Thunder-Datamine/blob/2423f3099e2a5ec3f31efdce87b9f4380ea761ec/lang.vromfs.bin_u/lang/missions_locations.csv#L77",
+      "Evidence": {
+        "LocalizationKey": "location/avg_training_ground",
+        "English": "Shooting Range"
+      },
+      "TacticalCoverageRequired": false
+    }
+  ],
+  "Unresolved": [
+    {
+      "LevelId": "avg_karantan",
+      "Name": null,
+      "Status": "unlocalized_level_no_catalog_missions",
+      "Source": "https://github.com/FURRO404/WT_KNOWLEDGE_DOCS/blob/master/data/level_catalog.json",
+      "Evidence": {
+        "CatalogMissionCounts": {
+          "total": 0
+        },
+        "LocalizationKeyFound": false,
+        "LocalFilePresent": true
+      },
+      "Notes": [
+        "不能仅从 Karantan 名称猜测 Carentan、Normandy 或任何现役地图别名。",
+        "目录中有本地关卡文件，但未找到本次 raw localization / mission catalog 的名字或任务引用；不能计作已确认遗漏的现役战术地图。"
+      ]
+    }
+  ],
+  "MapEntries": 94,
+  "SourcedMaps": 68,
+  "CompatibilityAliases": 24,
+  "Positions": 2422,
+  "SniperPositions": 587,
+  "Routes": 1165,
+  "DangerAnnotations": 1941,
+  "DangerPolygons": 158,
+  "CoveredLevelIds": [
+    "avg_abandoned_factory",
+    "avg_abandoned_town",
+    "avg_africa_desert",
+    "avg_alaska_town",
+    "avg_american_valley",
+    "avg_aral_sea",
+    "avg_arctic",
+    "avg_ardennes",
+    "avg_ardennes_snow",
+    "avg_berlin",
+    "avg_breslau",
+    "avg_container_port",
+    "avg_eastern_europe",
+    "avg_egypt_sinai",
+    "avg_european_fortress",
+    "avg_falklands",
+    "avg_finland",
+    "avg_fulda",
+    "avg_greece",
+    "avg_guadalcanal",
+    "avg_hurtgen",
+    "avg_iberian_castle",
+    "avg_ireland",
+    "avg_israel",
+    "avg_japan",
+    "avg_karelia_forest_a",
+    "avg_karpaty_passage",
+    "avg_korea_lake",
+    "avg_krymsk",
+    "avg_kursk_villages",
+    "avg_lazzaro_italy_new_city",
+    "avg_maginot_rework",
+    "avg_mozdok",
+    "avg_netherlands",
+    "avg_normandy",
+    "avg_northern_india",
+    "avg_northern_valley",
+    "avg_nuclear_incident",
+    "avg_poland",
+    "avg_poland_snow",
+    "avg_port_novorossiysk",
+    "avg_red_desert",
+    "avg_rheinland",
+    "avg_sector_montmedy_snow",
+    "avg_snow_alps",
+    "avg_soviet_range",
+    "avg_soviet_suburban",
+    "avg_soviet_suburban_snow",
+    "avg_stalingrad_factory",
+    "avg_sweden",
+    "avg_syria",
+    "avg_tunisia_desert",
+    "avg_vietnam_hills",
+    "avg_vlaanderen",
+    "avg_volokolamsk",
+    "avg_western_europe"
+  ],
+  "RemainingMaps": [
+    {
+      "Id": "avg_karantan",
+      "Name": "待补充战术资料"
+    },
+    {
+      "Id": "avg_sector_montmedy",
+      "Name": "待补充战术资料"
+    }
+  ],
+  "AllMapsTacticsComplete": false,
+  "GameUiOperated": false
+}

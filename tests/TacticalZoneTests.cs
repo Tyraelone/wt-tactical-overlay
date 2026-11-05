@@ -1,0 +1,16 @@
+using System;using System.Collections.Generic;using WtTactical;
+class TacticalZoneTests{
+ static int pass,fail;static void Assert(bool v){if(!v)throw new Exception("Assertion failed");}static void Check(string n,Action a){try{a();pass++;Console.WriteLine("PASS "+n);}catch(Exception e){fail++;Console.WriteLine("FAIL "+n+": "+e.Message);}}
+ static MapLibrary Library(TacticalZone z){return new MapLibrary{Schema=1,Maps=new List<MapDefinition>{new MapDefinition{Id="map",Pins=new List<Pin>(),Routes=new List<Route>(),Zones=new List<TacticalZone>{z}}}};}
+ static void Reject(Action a){bool bad=false;try{a();}catch(ArgumentException){bad=true;}Assert(bad);}
+ static int Main(){
+ Check("risk icon remains hittable beside an overlapping tactical point",delegate{var z=new TacticalZone{Geometry="hotspot",Points=new[]{new[]{.5,.5}}};Assert(ZoneGeometry.Hit(z,new Viewport(),40,34,100,100,0));Assert(!ZoneGeometry.Hit(z,new Viewport(),10,10,100,100,0));});
+ Check("source mode and perspective never become current player allegiance",delegate{Assert(TacticalPresentation.InContext(null,"battle-1","Red"));Assert(TacticalPresentation.InContext("domination-1|Blue","domination-1",null));Assert(!TacticalPresentation.InContext("domination-2|Blue","domination-1",null));Assert(!TacticalPresentation.InContext("domination-1|Blue","domination-1","Red"));});
+ Check("danger polygon respects a safe interior hole",delegate{var z=new TacticalZone{Id="z",Geometry="polygon",Polygons=new[]{new[]{new[]{.1,.1},new[]{.9,.1},new[]{.9,.9},new[]{.1,.9}},new[]{new[]{.4,.4},new[]{.6,.4},new[]{.6,.6},new[]{.4,.6}}}};Assert(ZoneGeometry.Hit(z,new Viewport(),20,20,100,100,0));Assert(!ZoneGeometry.Hit(z,new Viewport(),50,50,100,100,0));});
+ Check("risk corridor hit follows the projected route",delegate{var z=new TacticalZone{Id="z",Geometry="corridor",Points=new[]{new[]{.1,.2},new[]{.8,.2}}};Assert(ZoneGeometry.Hit(z,new Viewport(),40,24,100,100,5));Assert(!ZoneGeometry.Hit(z,new Viewport(),40,60,100,100,5));});
+ Check("risk filtering is independent of point and route display",delegate{var z=new[]{new TacticalZone{Id="a",Evidence="source_explicit"},new TacticalZone{Id="b",Evidence="source_inference"}};Assert(TacticalPresentation.VisibleZones(z,false,true).Count==0);Assert(TacticalPresentation.VisibleZones(z,true,false).Count==1);Assert(TacticalPresentation.VisibleZones(z,true,true).Count==2);});
+ Check("invalid risk geometry is rejected before rendering",delegate{Reject(delegate{Validation.Library(Library(new TacticalZone{Id="z",Geometry="polygon",Polygons=new[]{new[]{new[]{.1,.2},new[]{.2,.3}}}}));});Reject(delegate{Validation.Library(Library(new TacticalZone{Id="z",Geometry="corridor",Points=new[]{new[]{.1,.2},new[]{double.NaN,.3}}}));});});
+ Check("registered external points may use an explicit extended reference frame",delegate{var l=new MapLibrary{Schema=1,Maps=new List<MapDefinition>{new MapDefinition{Id="m",CoordinateBounds=new Viewport{X0=-1,Y0=-1,X1=2,Y1=2},Pins=new List<Pin>{new Pin{Id="p",X=1.2,Y=.5}},Routes=new List<Route>()}}};Validation.Library(l);l.Maps[0].CoordinateBounds=null;Reject(delegate{Validation.Library(l);});});
+ Console.WriteLine("RESULT "+pass+" passed, "+fail+" failed");return fail==0?0:1;
+ }
+}
