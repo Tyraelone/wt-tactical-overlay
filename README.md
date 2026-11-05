@@ -71,4 +71,3 @@ pwsh -File ./package.ps1
 范围为陆战固定参考资料。当前仍有历史关卡身份 / 几何缺口，全部模式、裁切和当前版本逐点实战验证尚未完成；冬季及核爆原点明确标为地形配准参考。混合 DPI 多屏、独占全屏、未反映到8111的手动缩放尚未完整验证。
 
 This is an unofficial, Windows-only static tactical-reference overlay for War Thunder. It does not show hidden enemies or provide live enemy intelligence. Source attribution and condition labels are retained; the project is not affiliated with Gaijin.
-
