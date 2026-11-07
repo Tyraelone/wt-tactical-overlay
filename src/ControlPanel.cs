@@ -20,6 +20,8 @@ namespace WtTactical {
         readonly RecognitionCatalog recognition;
         UserData user=new UserData();
         bool saveAllowed=true,requested,manualConfirmed,polling,closed;
+        bool sessionStarted, externalStartup;
+        ExternalMapWindow externalWindow;
         readonly ActivationGate liveGate=new ActivationGate();
         readonly List<double[]> draftRoute=new List<double[]>();
         readonly CheckBox drawRoute=Check("连续点选绘制本人路线",false);
@@ -53,7 +55,7 @@ namespace WtTactical {
             this.library=library;this.root=root;userFile=Path.Combine(root,"user-data","annotations.json");
             string catalogFile=Path.Combine(root,"data","recognition.json");recognition=File.Exists(catalogFile)?JsonStore.Load<RecognitionCatalog>(catalogFile):new RecognitionCatalog();
             live.IsChecked=connectLive;liveGate.SetEnabled(connectLive);
-            Title="WT 战术地图台 V0.4.1 · 自动对齐等待修复";Width=1080;Height=860;MinWidth=950;MinHeight=700;WindowStartupLocation=WindowStartupLocation.CenterScreen;
+            Title="WT 战术地图台 V0.5.0";Width=1080;Height=860;MinWidth=950;MinHeight=700;WindowStartupLocation=WindowStartupLocation.CenterScreen;
             Background=new SolidColorBrush(Color.FromRgb(13,21,31));Foreground=Brushes.White;FontFamily=new FontFamily("Microsoft YaHei UI");FontSize=12;
             ApplyTheme();LoadUser();Content=BuildLayout();foreach(var input in new[]{x0,y0,x1,y1})input.IsReadOnly=live.IsChecked==true;
             mapSelect.ItemsSource=BrowsableMaps().OrderBy(m=>m.Status=="no_tactical_source").ThenBy(m=>m.English).ToList();
@@ -64,11 +66,44 @@ namespace WtTactical {
             foreach(var c in new[]{pins,routes,danger,labels,conditional,strategic})c.Click+=delegate{RefreshCanvases();RefreshList();};
             contextSelect.SelectionChanged+=delegate{RefreshCanvases();RefreshList();};perspective.SelectionChanged+=delegate{RefreshCanvases();RefreshList();};
             edit.Click+=delegate{Overlay.SetPassthrough(edit.IsChecked!=true);UpdateVisibility();};
-            live.Click+=delegate{liveGate.SetEnabled(live.IsChecked==true);foreach(var input in new[]{x0,y0,x1,y1})input.IsReadOnly=live.IsChecked==true;requested=false;armedSession=null;snapshot=null;if(live.IsChecked==true){pollTimer.Start();Poll();}else{pollTimer.Stop();liveStatus.Text="手动模式：换图/缩放后请停用并重新校准。";}UpdateVisibility();};
+            live.Click+=delegate{liveGate.SetEnabled(live.IsChecked==true);foreach(var input in new[]{x0,y0,x1,y1})input.IsReadOnly=live.IsChecked==true;requested=false;armedSession=null;snapshot=null;if(live.IsChecked==true){pollTimer.Start();Poll();}else{pollTimer.Stop();liveStatus.Text="手动模式：换图/缩放后请停用并重新校准。";}UpdateVisibility();RefreshExternalMap();};
             SourceInitialized+=delegate{handle=new WindowInteropHelper(this).Handle;HwndSource.FromHwnd(handle).AddHook(Hook);RegisterKeys();};
-            Loaded+=delegate{Overlay.Show();Overlay.Hide();visibilityTimer.Start();if(live.IsChecked==true){pollTimer.Start();Poll();}};
+            Loaded+=delegate{StartSession();};
             visibilityTimer.Tick+=delegate{UpdateVisibility();};pollTimer.Tick+=delegate{Poll();};
-            Closing+=delegate{closed=true;liveGate.Close();visibilityTimer.Stop();pollTimer.Stop();foreach(int id in registered)Native.UnregisterHotKey(handle,id);Overlay.Close();};
+            Closing+=delegate{closed=true;liveGate.Close();visibilityTimer.Stop();pollTimer.Stop();foreach(int id in registered)Native.UnregisterHotKey(handle,id);if(externalWindow!=null)externalWindow.Close();Overlay.Close();};
+        }
+
+        void StartSession(){
+            if(sessionStarted)return;
+            sessionStarted=true;
+            new WindowInteropHelper(this).EnsureHandle();
+            new WindowInteropHelper(Overlay).EnsureHandle();
+            visibilityTimer.Start();
+            if(live.IsChecked==true){pollTimer.Start();Poll();}
+        }
+
+        public void OpenExternalMap(bool standalone=false){
+            if(standalone)externalStartup=true;
+            if(externalWindow==null){
+                externalWindow=new ExternalMapWindow();
+                externalWindow.PlaceOnSecondary();
+                externalWindow.ControlRequested+=ShowControlPanel;
+                externalWindow.Closed+=delegate{
+                    externalWindow=null;
+                    if(externalStartup&&!IsVisible&&!closed)Close();
+                };
+            }
+            StartSession();
+            RefreshExternalMap();
+            externalWindow.Show();
+            if(externalWindow.WindowState==WindowState.Minimized)externalWindow.WindowState=WindowState.Normal;
+            externalWindow.Activate();
+        }
+
+        void ShowControlPanel(){
+            Show();
+            WindowState=WindowState.Normal;
+            Activate();
         }
         static TextBlock Text(string s,double size){return new TextBlock{Text=s,FontSize=size,TextWrapping=TextWrapping.Wrap,Foreground=new SolidColorBrush(Color.FromRgb(192,208,222)),Margin=new Thickness(0,3,0,4)};}
         void ApplyTheme(){
@@ -92,7 +127,7 @@ namespace WtTactical {
             var selector=new StackPanel();selector.Children.Add(Text("地图搜索 / 选择",12));selector.Children.Add(search);selector.Children.Add(mapSelect);Grid.SetRow(selector,0);mapSide.Children.Add(selector);
             Grid.SetRow(mapInfo,1);mapSide.Children.Add(mapInfo);
             var viewbox=new Viewbox{Stretch=Stretch.Uniform,HorizontalAlignment=HorizontalAlignment.Center,VerticalAlignment=VerticalAlignment.Center,Child=preview};preview.Width=preview.Height=520;Grid.SetRow(viewbox,2);mapSide.Children.Add(viewbox);
-            var legend=new StackPanel();legend.Children.Add(Text("红色填充：危险区　红虚线带：危险通路　△：风险点（无射程含义）",11));legend.Children.Add(Text("黄点：远射　蓝点：观察　绿线：掩护　橙线：进攻　黄线：侧翼",11));var sourceButtons=new WrapPanel();sourceButtons.Children.Add(Button("原始战术来源 ↗",OpenGuide));sourceButtons.Children.Add(Button("载入参考底图",delegate{LoadReference();}));legend.Children.Add(sourceButtons);Grid.SetRow(legend,3);mapSide.Children.Add(legend);
+            var legend=new StackPanel();legend.Children.Add(Text("红色填充：危险区　红虚线带：危险通路　△：风险点（无射程含义）",11));legend.Children.Add(Text("黄点：远射　蓝点：观察　绿线：掩护　橙线：进攻　黄线：侧翼",11));var sourceButtons=new WrapPanel();sourceButtons.Children.Add(Button("打开副屏地图",delegate{OpenExternalMap();}));sourceButtons.Children.Add(Button("原始战术来源 ↗",OpenGuide));sourceButtons.Children.Add(Button("载入参考底图",delegate{LoadReference();}));legend.Children.Add(sourceButtons);Grid.SetRow(legend,3);mapSide.Children.Add(legend);
             var list=new StackPanel();list.Children.Add(markerList);list.Children.Add(new ScrollViewer{Content=detail,Height=96,VerticalScrollBarVisibility=ScrollBarVisibility.Auto});Grid.SetRow(list,4);mapSide.Children.Add(list);
             var options=new StackPanel();options.Children.Add(Text("01  显示图层",15));var filters=new WrapPanel();foreach(var c in new[]{pins,routes,danger,labels})filters.Children.Add(c);options.Children.Add(filters);options.Children.Add(edit);options.Children.Add(always);
             var riskFilters=new WrapPanel();riskFilters.Children.Add(conditional);riskFilters.Children.Add(strategic);options.Children.Add(riskFilters);options.Children.Add(Text("战术方案（自动识别地形；默认方案不代表已识别本局模式）",11));options.Children.Add(contextSelect);options.Children.Add(perspective);options.Children.Add(Text("红/蓝是资料出生视角，非实时敌我。双方参考同时展示各自适用位置。",10));options.Children.Add(tactics);
@@ -124,7 +159,37 @@ namespace WtTactical {
         void RefreshList(){if(Current==null)return;var items=new List<AnnotationItem>();int i=0;foreach(var p in Current.Pins.Concat(CustomPins())){i++;if(!InContext(p.Context))continue;items.Add(new AnnotationItem{Title=i+"  "+p.Title,Note=TacticalPresentation.Description(p.Title,p.Note,p.Conditions,p.Evidence,p.Source),Pin=p});}foreach(var z in Current.Zones.Where(z=>InContext(z.Context)&&(conditional.IsChecked==true||z.Evidence!="source_inference")))items.Add(new AnnotationItem{Title=(z.Kind=="strategic"?"◇ ":"⚠ ")+z.Title,Note=TacticalPresentation.Description(z.Title,z.Note,z.Conditions,z.Evidence,z.Source),Zone=z});foreach(var r in Current.Routes.Concat(CustomRoutes()).Where(r=>InContext(r.Context)))items.Add(new AnnotationItem{Title="↳ "+r.Title,Note=TacticalPresentation.Description(r.Title,r.Note,r.Conditions,null,r.Source),Route=r});markerList.ItemsSource=items;}
         List<Pin> CustomPins(){return Current==null?new List<Pin>():user.Markers.Where(p=>p.MapId==Current.Id).Select(p=>p.Marker).ToList();}
         List<Route> CustomRoutes(){return Current==null?new List<Route>():user.Routes.Where(p=>p.MapId==Current.Id).Select(p=>p.Path).ToList();}
-        void RefreshCanvases(){foreach(var c in new[]{preview,Overlay.Canvas}){c.Custom=CustomPins();c.CustomRoutes=CustomRoutes();c.ShowPins=pins.IsChecked==true;c.ShowRoutes=routes.IsChecked==true;c.ShowDanger=danger.IsChecked==true;c.ShowConditional=conditional.IsChecked==true;c.ShowStrategic=strategic.IsChecked==true;c.ActiveContext=contextSelect.SelectedItem as string;c.Perspective=perspective.SelectedIndex==1?"Red":perspective.SelectedIndex==2?"Blue":null;c.Labels=labels.IsChecked==true;c.InvalidateVisual();}}
+        void RefreshCanvases(){
+            ApplyLayerSettings(preview);
+            ApplyLayerSettings(Overlay.Canvas);
+            RefreshExternalMap();
+        }
+
+        void ApplyLayerSettings(TacticalCanvas canvas){
+            canvas.Custom=canvas.Map==null?new List<Pin>():CustomPins();
+            canvas.CustomRoutes=canvas.Map==null?new List<Route>():CustomRoutes();
+            canvas.ShowPins=pins.IsChecked==true;
+            canvas.ShowRoutes=routes.IsChecked==true;
+            canvas.ShowDanger=danger.IsChecked==true;
+            canvas.ShowConditional=conditional.IsChecked==true;
+            canvas.ShowStrategic=strategic.IsChecked==true;
+            canvas.ActiveContext=contextSelect.SelectedItem as string;
+            canvas.Perspective=perspective.SelectedIndex==1?"Red":perspective.SelectedIndex==2?"Blue":null;
+            canvas.Labels=labels.IsChecked==true;
+            canvas.InvalidateVisual();
+        }
+
+        void RefreshExternalMap(){
+            if(externalWindow==null||closed)return;
+            var current=live.IsChecked==true?snapshot:null;
+            var map=Current;
+            if(current==null||map==null||ResolvedMapId(current)!=map.Id)map=null;
+            var bounds=map==null?null:SourceBoundsFor(current,map.Id);
+            string message="当前战斗底图 · 等待战术资料定位";
+            if(current==null)message=live.IsChecked==true?"等待读取游戏地图":"请在控制台开启自动识别地图";
+            externalWindow.Present(current,map,bounds,message);
+            ApplyLayerSettings(externalWindow.Canvas);
+        }
         string DisplayStamp(){double scale=Native.GetDpiForSystem()/96.0;return string.Join("|",SystemParameters.VirtualScreenLeft,SystemParameters.VirtualScreenTop,SystemParameters.VirtualScreenWidth,SystemParameters.VirtualScreenHeight,scale,scale);}
         void AdoptProfileInputs(Profile p){if(object.ReferenceEquals(adoptedProfile,p))return;left.Text=F(p.Left);top.Text=F(p.Top);width.Text=F(p.Width);height.Text=F(p.Height);x0.Text=F(p.View.X0);y0.Text=F(p.View.Y0);x1.Text=F(p.View.X1);y1.Text=F(p.View.Y1);adoptedProfile=p;capturedScreen=null;}
         Profile SavedProfile(string mapId,MapSnapshot map,bool fallback=false){var all=user.Profiles.Where(p=>p.MapId==mapId).Reverse();var exact=map==null?null:all.FirstOrDefault(p=>CalibrationPolicy.CanReuse(p,DisplayStamp(),map.Fingerprint));return exact??(fallback?all.FirstOrDefault():null);}
@@ -149,7 +214,7 @@ namespace WtTactical {
         void Arm(MapSnapshot current,Profile profile){if(!CalibrationPolicy.CanReuse(profile,DisplayStamp(),current.Fingerprint))return;var source=SourceBoundsFor(current,profile.MapId);var existing=BindingGate.Match(current.Fingerprint,user.Bindings);if(existing==null||existing.MapId!=profile.MapId||!BindingGate.CanDisplay(current.Fingerprint,current.Session,SessionKey(current),profile.MapId,profile.View,user.Bindings)){
                 user.Bindings.RemoveAll(b=>b.Fingerprint==current.Fingerprint);user.Bindings.Add(new Binding{Fingerprint=current.Fingerprint,MapId=profile.MapId,View=profile.View.Copy(),SourceBounds=source});Save();}else if(existing.SourceBounds==null){existing.SourceBounds=source;Save();}AdoptProfileInputs(profile);Overlay.Apply(profile);armedSession=SessionKey(current);}
         public async Task RefreshAutoMap(){if(polling||closed||live.IsChecked!=true)return;polling=true;int generation=liveGate.Generation;try{
-                var next=await LiveMap.Poll();if(!liveGate.Accept(generation))return;if(snapshot==null||snapshot.Fingerprint!=next.Fingerprint||snapshot.Session!=next.Session){snapshot=next;armedSession=null;UpdateVisibility();}else snapshot=next;
+                var next=await LiveMap.Poll();if(!liveGate.Accept(generation))return;if(snapshot==null||snapshot.Fingerprint!=next.Fingerprint||snapshot.Session!=next.Session){snapshot=next;armedSession=null;UpdateVisibility();RefreshExternalMap();}else snapshot=next;
                 var known=KnownBinding(next);if((known==null||known.SourceBounds==null)&&matchedImageKey!=next.ImageFingerprint){
                     liveStatus.Text="正在自动匹配地图…";var selectedCatalog=known==null?recognition:new RecognitionCatalog{Templates=recognition.Templates.Where(t=>t.MapId==known.MapId).ToList()};var result=await Task.Run(()=>MapRecognizer.Recognize(next.Image,selectedCatalog));if(!liveGate.Accept(generation))return;
                     var stable=await LiveMap.Poll();if(!liveGate.Accept(generation))return;if(stable.Fingerprint!=next.Fingerprint||stable.Session!=next.Session){snapshot=stable;armedSession=null;liveStatus.Text="地图正在切换，等待稳定后重新识别。";return;}
@@ -157,11 +222,21 @@ namespace WtTactical {
                 }
                 string mapId=ResolvedMapId(next);var map=library.Maps.FirstOrDefault(m=>m.Id==mapId);if(map==null){armedSession=null;liveStatus.Text=imageMatch!=null&&imageMatch.Match!=null?"未可靠识别（最佳候选 "+imageMatch.Match.MapId+"，"+(imageMatch.Match.Score*100).ToString("0.0")+"%）；浮层隐藏，可手动学习。":"尚无此地图的可靠匹配；浮层隐藏，可手动学习。";return;}
                 if(Current!=map){autoSelecting=true;try{search.Text="";mapSelect.ItemsSource=BrowsableMaps().OrderBy(m=>m.Status=="no_tactical_source").ThenBy(m=>m.English).ToList();mapSelect.SelectedItem=map;}finally{autoSelecting=false;}}
-                var profile=AutomaticProfile(next,mapId);bool reusable=profile!=null;if(reusable)Arm(next,profile);else armedSession=null;
                 string confidence=matchedImageKey==next.ImageFingerprint&&imageMatch!=null&&imageMatch.Accepted?" · 匹配 "+(imageMatch.Match.Score*100).ToString("0.0")+"%":" · 已学习指纹";
-                liveStatus.Text="已自动识别："+map.Name+confidence+(reusable?" · 位置已复用，网格范围已换算":" · 请用两个角框选小地图位置");
-                SetMatchedPreview(next,mapId);
-            }catch(Exception e){if(liveGate.Accept(generation)){snapshot=null;armedSession=null;liveStatus.Text="8111 暂不可用，浮层隐藏；连接恢复后自动重试。"+e.Message;}}finally{polling=false;UpdateVisibility();}}
+                liveStatus.Text="已自动识别："+map.Name+confidence+UpdateNativeMap(next,mapId);
+            }catch(Exception e){if(liveGate.Accept(generation)){snapshot=null;armedSession=null;liveStatus.Text="8111 暂不可用，浮层隐藏；连接恢复后自动重试。"+e.Message;}}finally{polling=false;UpdateVisibility();RefreshExternalMap();}}
+        string UpdateNativeMap(MapSnapshot current,string mapId){
+            try{
+                var profile=AutomaticProfile(current,mapId);
+                if(profile!=null)Arm(current,profile);
+                else armedSession=null;
+                SetMatchedPreview(current,mapId);
+                return profile!=null?" · 位置已复用，网格范围已换算":" · 请用两个角框选小地图位置";
+            }catch(Exception e){
+                armedSession=null;
+                return " · 主屏浮层暂无法对齐。"+e.Message;
+            }
+        }
         void SetMatchedPreview(MapSnapshot current,string mapId){string key=current.ImageFingerprint+":"+mapId+":"+current.Fingerprint;if(previewImageKey==key)return;var grid=current.GridView;Viewport view;try{view=AutomaticView(current,mapId);}catch(ArgumentException){return;}if(grid==null||grid.X0<0||grid.Y0<0||grid.X1>1||grid.Y1>1)return;using(var stream=new MemoryStream(current.Image)){
                 var source=new BitmapImage();source.BeginInit();source.CacheOption=BitmapCacheOption.OnLoad;source.StreamSource=stream;source.EndInit();int px=Math.Max(0,(int)Math.Round(grid.X0*source.PixelWidth)),py=Math.Max(0,(int)Math.Round(grid.Y0*source.PixelHeight));int w=Math.Min(source.PixelWidth-px,(int)Math.Round((grid.X1-grid.X0)*source.PixelWidth)),h=Math.Min(source.PixelHeight-py,(int)Math.Round((grid.Y1-grid.Y0)*source.PixelHeight));if(w<1||h<1)return;var crop=new CroppedBitmap(source,new Int32Rect(px,py,w,h));crop.Freeze();preview.BackgroundImage=crop;preview.View=view;previewImageKey=key;preview.InvalidateVisual();}}
         public Dictionary<string,object> RecognitionDiagnostic(){return new Dictionary<string,object>{{"SelectedMap",Current==null?null:Current.Id},{"Connected",snapshot!=null},{"Recognized",snapshot!=null&&ResolvedMapId(snapshot)!=null},{"CalibrationReusable",snapshot!=null&&Current!=null&&SavedProfile(Current.Id,snapshot)!=null},{"RecognitionStatus",liveStatus.Text},{"OverlayRequested",requested},{"OverlayVisible",Overlay.IsVisible},{"Match",imageMatch},{"ReferenceTemplates",recognition.Templates.Count}};}

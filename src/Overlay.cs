@@ -21,6 +21,7 @@ namespace WtTactical {
         public event Action<double,double> Pick;
         readonly ToolTip tip=new ToolTip{MaxWidth=360,Placement=System.Windows.Controls.Primitives.PlacementMode.Mouse};
         object hover;
+        internal void ClearHover(){tip.IsOpen=false;hover=null;}
         public TacticalCanvas() {
             ClipToBounds=true;MinWidth=50;MinHeight=50;ToolTip=tip;
             MouseMove+=delegate(object s,MouseEventArgs e){var pos=e.GetPosition(this);object found=null;string description=null;var nearest=VisiblePins().OrderBy(p=>Distance(p,pos)).FirstOrDefault();

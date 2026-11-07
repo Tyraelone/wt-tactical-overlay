@@ -23,7 +23,59 @@ class UiCalibrationTests {
     }
     static void Arm(ControlPanel p,Profile profile){Call(p,"Arm",new MapSnapshot{Fingerprint=profile.MapLayoutStamp,Session="1",GridView=profile.View.Copy()},profile);}
     static void Set(object o,string name,object value){o.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(o,value);}
+    static byte[] TestMapImage(int width,int height){
+        var frame=System.Windows.Media.Imaging.BitmapSource.Create(width,height,96,96,System.Windows.Media.PixelFormats.Bgra32,null,new byte[width*height*4],width*4);
+        var encoder=new System.Windows.Media.Imaging.PngBitmapEncoder();
+        encoder.Frames.Add(System.Windows.Media.Imaging.BitmapFrame.Create(frame));
+        using(var stream=new MemoryStream()){encoder.Save(stream);return stream.ToArray();}
+    }
+    static TacticalCanvas PrepareExternalCanvas(ControlPanel panel){
+        var type=typeof(ControlPanel).Assembly.GetType("WtTactical.ExternalMapWindow");
+        if(type==null)throw new Exception("The second-screen map window is missing");
+        var window=(System.Windows.Window)Activator.CreateInstance(type);
+        Set(panel,"externalWindow",window);
+        return (TacticalCanvas)type.GetField("Canvas").GetValue(window);
+    }
     [STAThread] static int Main(){
+        Check("external map remains available when native calibration cannot be saved",delegate(ControlPanel p,Profile a,Profile b){
+            var current=(MapSnapshot)Field(p,"snapshot");
+            current.Image=TestMapImage(200,100);
+            var canvas=PrepareExternalCanvas(p);
+            Set(p,"saveAllowed",false);
+            string notice=(string)Call(p,"UpdateNativeMap",current,b.MapId);
+            Assert(notice.Contains("主屏")&&Field(p,"armedSession")==null);
+            Call(p,"RefreshExternalMap");
+            Assert(canvas.Map!=null&&canvas.BackgroundImage!=null&&!p.Overlay.IsVisible);
+        });
+        Check("external map projects the clipped live grid without screen calibration",delegate(ControlPanel p,Profile a,Profile b){
+            var data=(UserData)Field(p,"user");a.PositionVerified=b.PositionVerified=false;
+            data.Bindings[1].SourceBounds=new Viewport{X0=.2,Y0=.2,X1=.6,Y1=.6};
+            Set(p,"snapshot",new MapSnapshot{Fingerprint="layout-b",ImageFingerprint="image-b",Session="1",Image=TestMapImage(200,100),GridView=new Viewport{X0=-.2,Y0=.1,X1=.8,Y1=.9}});
+            var canvas=PrepareExternalCanvas(p);
+            Call(p,"RefreshExternalMap");
+            var image=(System.Windows.Media.Imaging.BitmapSource)canvas.BackgroundImage;
+            Assert(canvas.Map!=null&&canvas.Map.Id==b.MapId);
+            Assert(image.PixelWidth==160&&image.PixelHeight==80);
+            Assert(Math.Abs(canvas.Width/canvas.Height-2)<.000001);
+            Assert(Math.Abs(canvas.View.X0+.5)<.000001&&Math.Abs(canvas.View.X1-1.5)<.000001);
+            Assert(Math.Abs(canvas.View.Y0+.25)<.000001&&Math.Abs(canvas.View.Y1-1.75)<.000001);
+            Assert(!p.Overlay.IsVisible&&data.ScreenCalibration==null);
+        });
+        Check("external map clears stale layers during a map change and disconnect",delegate(ControlPanel p,Profile a,Profile b){
+            var data=(UserData)Field(p,"user");
+            data.Markers.Add(new PinRecord{MapId=b.MapId,Marker=new Pin{Id="personal",X=.5,Y=.5,Kind="sniper"}});
+            var canvas=PrepareExternalCanvas(p);
+            var current=(MapSnapshot)Field(p,"snapshot");current.Image=TestMapImage(200,100);
+            ((CheckBox)Field(p,"danger")).IsChecked=false;
+            Call(p,"RefreshCanvases");
+            Assert(canvas.Map!=null&&canvas.Custom.Count==1&&!canvas.ShowDanger);
+            Set(p,"snapshot",new MapSnapshot{Fingerprint="unknown",ImageFingerprint="other-image",Session="2",Image=TestMapImage(100,100),GridView=new Viewport()});
+            Call(p,"RefreshExternalMap");
+            Assert(canvas.Map==null&&canvas.Custom.Count==0&&canvas.BackgroundImage!=null);
+            Set(p,"snapshot",null);
+            Call(p,"RefreshExternalMap");
+            Assert(canvas.Map==null&&canvas.BackgroundImage==null);
+        });
         Check("saving screen position while awaiting recognition preserves enable intent",delegate(ControlPanel p,Profile a,Profile b){Set(p,"snapshot",null);Call(p,"Toggle");Call(p,"BindCurrent");Assert((bool)Field(p,"requested")&&!p.Overlay.IsVisible);Assert(((UserData)Field(p,"user")).ScreenCalibration.PositionVerified);Call(p,"Toggle");Assert(!(bool)Field(p,"requested"));});
         Check("lost live state has a readiness message instead of a low level projection exception",delegate(ControlPanel p,Profile a,Profile b){Set(p,"snapshot",null);bool guarded=false;try{Call(p,"ReadProfile");}catch(TargetInvocationException e){guarded=e.InnerException is InvalidOperationException&&!e.InnerException.Message.Contains("缺少原生网格");}Assert(guarded);Assert(((UserData)Field(p,"user")).Bindings.Count==2);});
         Check("screen position saves before any live map exists",delegate(ControlPanel p,Profile a,Profile b){Set(p,"snapshot",null);Call(p,"ApplyProfile");var data=(UserData)Field(p,"user");Assert(data.ScreenCalibration!=null&&data.ScreenCalibration.PositionVerified&&data.ScreenCalibration.Left==10);Assert(data.Profiles.Count==2&&!p.Overlay.IsVisible);});
