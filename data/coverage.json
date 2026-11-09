@@ -223,8 +223,8 @@
       "Summer": "maginotline",
       "Inliers": 532,
       "Error95": 0.001439714908488466,
-      "Positions": 48,
-      "Risks": 36
+      "Positions": 47,
+      "Risks": 37
     },
     {
       "Map": "seversk-winter",
@@ -283,10 +283,10 @@
   "MapEntries": 94,
   "SourcedMaps": 68,
   "CompatibilityAliases": 24,
-  "Positions": 2422,
-  "SniperPositions": 587,
-  "Routes": 1165,
-  "DangerAnnotations": 1941,
+  "Positions": 2480,
+  "SniperPositions": 612,
+  "Routes": 1221,
+  "DangerAnnotations": 1997,
   "DangerPolygons": 158,
   "CoveredLevelIds": [
     "avg_abandoned_factory",
@@ -357,5 +357,350 @@
     }
   ],
   "AllMapsTacticsComplete": false,
-  "GameUiOperated": false
+  "GameUiOperated": false,
+  "SourceSnapshots": {
+    "WarDevOps": {
+      "Url": "https://wardevops.github.io/",
+      "UpdatedAt": "2026-11-09T03:32:01Z",
+      "TacticalDataSHA256": "1bfc2f482ead605060e83784dc88462a3b949744d957c5c37feec0c4b15451ad",
+      "ImageTree": "21835c71c6e09bf04c41c98c16d3eb5a199c0059",
+      "ImageFilesVerified": 290
+    },
+    "RATLINE": {
+      "Url": "https://ratline.site/guides/",
+      "CheckedOn": "2026-11-09",
+      "GuidesCompared": 50,
+      "TacticalChanges": 0
+    }
+  },
+  "UpdatedLayouts": [
+    {
+      "Id": "vietnamhills",
+      "Name": "越南丘陵",
+      "Pins": {
+        "Added": 16,
+        "Removed": 20,
+        "Edited": 26
+      },
+      "Routes": {
+        "Added": 10,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 11,
+        "Removed": 8,
+        "Edited": 1
+      }
+    },
+    {
+      "Id": "tunisia",
+      "Name": "突尼斯",
+      "SummaryChanged": true
+    },
+    {
+      "Id": "stalingrad",
+      "Name": "斯大林格勒",
+      "Pins": {
+        "Added": 14,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Routes": {
+        "Added": 9,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 13,
+        "Removed": 0,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "spaceport",
+      "Name": "航天发射场",
+      "Pins": {
+        "Added": 5,
+        "Removed": 0,
+        "Edited": 2
+      },
+      "Routes": {
+        "Added": 6,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 10,
+        "Removed": 0,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "sinai",
+      "Name": "西奈",
+      "Pins": {
+        "Added": 2,
+        "Removed": 2,
+        "Edited": 5
+      },
+      "Routes": {
+        "Added": 4,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 2,
+        "Removed": 0,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "seversk-13",
+      "Name": "谢韦尔斯克-13",
+      "Pins": {
+        "Added": 0,
+        "Removed": 0,
+        "Edited": 3
+      }
+    },
+    {
+      "Id": "secondbattleofelalmein",
+      "Name": "第二次阿拉曼战役",
+      "Pins": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 5
+      },
+      "Routes": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 2,
+        "Removed": 1,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "sandsofsinai",
+      "Name": "西奈沙漠",
+      "Pins": {
+        "Added": 0,
+        "Removed": 0,
+        "Edited": 5
+      }
+    },
+    {
+      "Id": "pradesh",
+      "Name": "普拉德什",
+      "Pins": {
+        "Added": 0,
+        "Removed": 0,
+        "Edited": 1
+      }
+    },
+    {
+      "Id": "portnovorossiysk",
+      "Name": "新罗西斯克港",
+      "SummaryChanged": true
+    },
+    {
+      "Id": "normandy",
+      "Name": "诺曼底",
+      "Pins": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "middleeast",
+      "Name": "中东",
+      "Pins": {
+        "Added": 3,
+        "Removed": 0,
+        "Edited": 7
+      },
+      "Routes": {
+        "Added": 5,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 8,
+        "Removed": 2,
+        "Edited": 0
+      },
+      "SummaryChanged": true
+    },
+    {
+      "Id": "maginotline",
+      "Name": "马奇诺防线",
+      "Pins": {
+        "Added": 0,
+        "Removed": 1,
+        "Edited": 1
+      },
+      "Zones": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "SummaryChanged": true
+    },
+    {
+      "Id": "breslau",
+      "Name": "布雷斯劳",
+      "Pins": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 1
+      },
+      "Routes": {
+        "Added": 0,
+        "Removed": 1,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 2,
+        "Removed": 0,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "battleofhurtgenforest",
+      "Name": "许特根森林",
+      "SummaryChanged": true
+    },
+    {
+      "Id": "advancetotherhine",
+      "Name": "莱茵河进军",
+      "Pins": {
+        "Added": 0,
+        "Removed": 0,
+        "Edited": 5
+      }
+    },
+    {
+      "Id": "abandonedtown",
+      "Name": "废弃城镇",
+      "Pins": {
+        "Added": 0,
+        "Removed": 0,
+        "Edited": 3
+      }
+    },
+    {
+      "Id": "arctic-polar-base",
+      "Name": "极北之地：极地基地",
+      "Pins": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 1
+      },
+      "Routes": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "ardennes-current",
+      "Name": "阿登（新版）",
+      "Pins": {
+        "Added": 0,
+        "Removed": 0,
+        "Edited": 2
+      },
+      "Zones": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "SummaryChanged": true
+    },
+    {
+      "Id": "north-holland",
+      "Name": "北荷兰",
+      "SummaryChanged": true
+    },
+    {
+      "Id": "surroundings-volokolamsk",
+      "Name": "沃洛科拉姆斯克郊外",
+      "Pins": {
+        "Added": 39,
+        "Removed": 1,
+        "Edited": 0
+      },
+      "Routes": {
+        "Added": 21,
+        "Removed": 0,
+        "Edited": 0
+      },
+      "Zones": {
+        "Added": 16,
+        "Removed": 1,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "maginot-winter",
+      "Name": "马其诺防线（冬季）",
+      "Pins": {
+        "Added": 0,
+        "Removed": 1,
+        "Edited": 1
+      },
+      "Zones": {
+        "Added": 1,
+        "Removed": 0,
+        "Edited": 0
+      }
+    },
+    {
+      "Id": "seversk-winter",
+      "Name": "谢韦尔斯克13（冬季）",
+      "Pins": {
+        "Added": 0,
+        "Removed": 0,
+        "Edited": 3
+      }
+    }
+  ],
+  "RefreshedLayouts": [
+    "vietnamhills",
+    "tunisia",
+    "stalingrad",
+    "spaceport",
+    "sinai",
+    "seversk-13",
+    "secondbattleofelalmein",
+    "sandsofsinai",
+    "pradesh",
+    "portnovorossiysk",
+    "normandy",
+    "middleeast",
+    "maginotline",
+    "breslau",
+    "battleofhurtgenforest",
+    "attica",
+    "advancetotherhine",
+    "abandonedtown",
+    "38thparallel-current",
+    "arctic-polar-base",
+    "ardennes-current",
+    "ardennes-current-conquest-1",
+    "north-holland",
+    "surroundings-volokolamsk",
+    "test-site-2271",
+    "maginot-winter",
+    "seversk-winter"
+  ]
 }
