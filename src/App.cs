@@ -11,7 +11,7 @@ namespace WtTactical {
     public static class Program {
         [STAThread] public static int Main(string[] args){
             Native.SetProcessDPIAware();string root=AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);if(!File.Exists(Path.Combine(root,"data","maps.json")))root=Directory.GetParent(root).FullName;
-            bool created;using(var mutex=new Mutex(true,"Local\\WtTacticalOverlay-Portable-V050",out created)){
+            bool created;using(var mutex=new Mutex(true,"Local\\WtTacticalOverlay-Portable-V051",out created)){
                 if(!created){MessageBox.Show("战术浮层已经运行，请使用 Ctrl+Alt+F10 显示控制台。退出快捷键：Ctrl+Alt+F11。","已在运行");return 2;}
                 try{var library=JsonStore.Load<MapLibrary>(Path.Combine(root,"data","maps.json"));Validation.Library(library);var app=new Application{ShutdownMode=ShutdownMode.OnMainWindowClose};
                     app.DispatcherUnhandledException+=delegate(object sender,DispatcherUnhandledExceptionEventArgs e){e.Handled=true;File.AppendAllText(Path.Combine(root,"error.log"),DateTimeOffset.Now+" "+e.Exception+Environment.NewLine);MessageBox.Show("程序出现错误，已停止浮层。详情见 error.log。","战术浮层");app.Shutdown(1);};

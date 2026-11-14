@@ -162,8 +162,13 @@ namespace WtTactical {
         static void Pair(double[] p){if(p==null||p.Length!=2||!Viewport.Finite(p[0])||!Viewport.Finite(p[1]))throw new ArgumentException("原生地图网格字段无效。");}
         public static Viewport FromWorld(double[] min,double[] max,double[] zero,double[] size){Pair(min);Pair(max);Pair(zero);Pair(size);double sx=max[0]-min[0],sy=max[1]-min[1];if(sx<=0||sy<=0||size[0]<=0||size[1]<=0)throw new ArgumentException("原生地图网格跨度无效。");
             var v=new Viewport{X0=(zero[0]-min[0])/sx,Y0=(max[1]-zero[1])/sy,X1=(zero[0]+size[0]-min[0])/sx,Y1=(max[1]-zero[1]+size[1])/sy};v.Validate();return v;}
-        public static Viewport ToReference(Viewport native,Viewport source){if(native==null||source==null)throw new ArgumentException("缺少原生网格或资料图定位。");native.Validate();source.Validate();if(source.X0<0||source.Y0<0||source.X1>1||source.Y1>1)throw new ArgumentException("资料图定位超出底图。");double w=source.X1-source.X0,h=source.Y1-source.Y0;
-            var v=new Viewport{X0=(native.X0-source.X0)/w,Y0=(native.Y0-source.Y0)/h,X1=(native.X1-source.X0)/w,Y1=(native.Y1-source.Y0)/h};v.Validate();return v;}
+        public static Viewport ToReference(Viewport native,Viewport source){
+            if(native==null||source==null)throw new ArgumentException("缺少原生网格或资料图定位。");
+            native.Validate();source.Validate();
+            double w=source.X1-source.X0,h=source.Y1-source.Y0;
+            var view=new Viewport{X0=(native.X0-source.X0)/w,Y0=(native.Y0-source.Y0)/h,X1=(native.X1-source.X0)/w,Y1=(native.Y1-source.Y0)/h};
+            view.Validate();return view;
+        }
     }
     public class UserData {
         public Profile ScreenCalibration {get;set;}

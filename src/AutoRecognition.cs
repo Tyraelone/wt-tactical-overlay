@@ -19,6 +19,7 @@ namespace WtTactical {
         public string GroupId {get;set;}
         public double Aspect {get;set;}
         public double[] Cells {get;set;}
+        public Viewport ReferenceBounds {get;set;}
         public static MapTemplate Create(string id,string group,Bitmap image){return new MapTemplate{MapId=id,GroupId=string.IsNullOrWhiteSpace(group)?id:group,Aspect=(double)image.Height/image.Width,Cells=IntegralImage.FromBitmap(image,256).Cells(0,0,256,(int)Math.Round(256.0*image.Height/image.Width),16)};}
     }
     public class ImageMatch {
@@ -59,6 +60,35 @@ namespace WtTactical {
         public void Fill(int x,int y,int w,int h,int n,double[] output){int index=0;for(int row=0;row<n;row++){int top=y+row*h/n,bottom=y+(row+1)*h/n;for(int col=0;col<n;col++){int left=x+col*w/n,right=x+(col+1)*w/n;for(int c=0;c<3;c++)output[index++]=Average(c,left,top,right,bottom);}}}
     }
     public static class MapRecognizer {
+        class TemplateCandidate {
+            public MapTemplate Template;
+            public ImageMatch Match;
+        }
+
+        static string Family(MapTemplate template){return string.IsNullOrWhiteSpace(template.GroupId)?template.MapId:template.GroupId;}
+
+        static List<TemplateCandidate> RefinementCandidates(IEnumerable<TemplateCandidate> candidates){
+            var ordered=candidates.OrderByDescending(candidate=>candidate.Match.Score).ToList();
+            var bestFamilies=ordered.GroupBy(candidate=>Family(candidate.Template)).Select(group=>group.First()).Take(6);
+            var selected=new List<TemplateCandidate>();
+            var seenTemplates=new HashSet<MapTemplate>();
+            foreach(var candidate in ordered.Take(6).Concat(bestFamilies))
+                if(seenTemplates.Add(candidate.Template))selected.Add(candidate);
+            return selected;
+        }
+
+        static ImageMatch ToCanonicalReference(ImageMatch match,MapTemplate template){
+            var reference=template.ReferenceBounds;
+            if(reference==null)return match;
+            double referenceWidth=reference.X1-reference.X0,referenceHeight=reference.Y1-reference.Y0;
+            return new ImageMatch{
+                MapId=match.MapId,GroupId=match.GroupId,Score=match.Score,
+                X=match.X-reference.X0/referenceWidth*match.Width,
+                Y=match.Y-reference.Y0/referenceHeight*match.Height,
+                Width=match.Width/referenceWidth,Height=match.Height/referenceHeight
+            };
+        }
+
         static double[] Vector(MapTemplate template,int n){if(template.Cells==null||template.Cells.Length!=16*16*3)throw new ArgumentException("识别模板格式无效。");var result=new double[n*n*3];int block=16/n;
             for(int y=0;y<n;y++)for(int x=0;x<n;x++)for(int c=0;c<3;c++){double total=0;for(int yy=0;yy<block;yy++)for(int xx=0;xx<block;xx++)total+=template.Cells[((y*block+yy)*16+x*block+xx)*3+c];result[(y*n+x)*3+c]=total/(block*block);}
             var mean=new double[3];for(int i=0;i<result.Length;i++)mean[i%3]+=result[i]/(n*n);double norm=0;for(int i=0;i<result.Length;i++){result[i]-=mean[i%3];norm+=result[i]*result[i];}norm=Math.Sqrt(norm);if(norm<.001)return null;for(int i=0;i<result.Length;i++)result[i]/=norm;return result;
@@ -73,14 +103,22 @@ namespace WtTactical {
             return result;
         }
         public static RecognitionResult Recognize(byte[] bytes,RecognitionCatalog catalog){
-            if(catalog==null||catalog.Schema!=1||catalog.Templates==null||catalog.Templates.Count==0)return new RecognitionResult{Reason="识别模板库缺失"};
+            if(catalog==null||(catalog.Schema!=1&&catalog.Schema!=2)||catalog.Templates==null||catalog.Templates.Count==0)return new RecognitionResult{Reason="识别模板库缺失"};
             using(var stream=new MemoryStream(bytes))using(var bitmap=new Bitmap(stream)){
                 if(bitmap.Width<64||bitmap.Height<64||bitmap.Width>8192||bitmap.Height>8192)return new RecognitionResult{Reason="底图尺寸不受支持"};
-                var coarse=IntegralImage.FromBitmap(bitmap,128);var candidates=new List<ImageMatch>();
-                foreach(var template in catalog.Templates){if(template.Aspect<.4||template.Aspect>2.5)continue;candidates.Add(Search(coarse,template,8,24,128,4,3,0,0,coarse.Width,coarse.Height));}
+                var coarse=IntegralImage.FromBitmap(bitmap,128);var candidates=new List<TemplateCandidate>();
+                foreach(var template in catalog.Templates){
+                    if(template.ReferenceBounds!=null)template.ReferenceBounds.Validate();
+                    if(template.Aspect<.4||template.Aspect>2.5)continue;
+                    candidates.Add(new TemplateCandidate{Template=template,Match=Search(coarse,template,8,24,128,4,3,0,0,coarse.Width,coarse.Height)});
+                }
                 var fine=IntegralImage.FromBitmap(bitmap,320);var refined=new List<ImageMatch>();
-                foreach(var best in candidates.OrderByDescending(m=>m.Score).Take(6)){var template=catalog.Templates.First(t=>t.MapId==best.MapId);int w=(int)Math.Round(best.Width*fine.Width),x=(int)Math.Round(best.X*fine.Width),y=(int)Math.Round(best.Y*fine.Height);
-                    refined.Add(Search(fine,template,16,w-11,w+11,1,1,x-10,y-10,x+10,y+10));}
+                foreach(var candidate in RefinementCandidates(candidates)){
+                    var best=candidate.Match;var template=candidate.Template;
+                    int w=(int)Math.Round(best.Width*fine.Width),x=(int)Math.Round(best.X*fine.Width),y=(int)Math.Round(best.Y*fine.Height);
+                    var match=Search(fine,template,16,w-11,w+11,1,1,x-10,y-10,x+10,y+10);
+                    refined.Add(ToCanonicalReference(match,template));
+                }
                 return RecognitionPolicy.Choose(refined);
             }
         }

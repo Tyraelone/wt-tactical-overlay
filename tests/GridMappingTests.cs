@@ -9,6 +9,21 @@ class GridMappingTests{
  Check("source point maps to hand-derived Tunisia screenshot position",delegate{var v=NativeGridMapping.FromWorld(new[]{0.0,0},new[]{4096.0,4096},new[]{350.0,3698},new[]{3300.0,3300});var p=v.Project(.4809,.4306,650,650);Equal(319.044896969697,p[0]);Equal(269.008921212121,p[1]);});
  Check("invalid grid does not silently become full-map view",delegate{bool rejected=false;try{NativeGridMapping.FromWorld(new[]{0.0,0},new[]{0.0,4096},new[]{0.0,0},new[]{3300.0,3300});}catch(ArgumentException){rejected=true;}Assert(rejected);});
  Check("default rectangle is not a verified calibration",delegate{Assert(!CalibrationPolicy.CanReuse(new Profile{MapId="test",DisplayStamp="d",MapLayoutStamp="m"},"d","m"));});
+ Check("canonical reference may extend outside a cropped query image",delegate{
+  var view=NativeGridMapping.ToReference(new Viewport(),new Viewport{X0=-.5,Y0=-.25,X1=1.5,Y1=1.75});
+  Equal(.25,view.X0);Equal(.125,view.Y0);Equal(.75,view.X1);Equal(.625,view.Y1);
+  var point=view.Project(.5,.375,400,200);Equal(200,point[0]);Equal(100,point[1]);
+ });
+ Check("extended source reference remains compatible with saved user bindings",delegate{
+  var library=new MapLibrary{Maps=new System.Collections.Generic.List<MapDefinition>{new MapDefinition{Id="canonical"}}};
+  var user=new UserData();user.Bindings.Add(new Binding{Fingerprint="crop",MapId="canonical",View=new Viewport(),SourceBounds=new Viewport{X0=-.5,Y0=-.25,X1=1.5,Y1=1.75}});
+  Validation.User(user,library);
+ });
+ Check("extended source bounds still reject nonfinite oversized and degenerate frames",delegate{
+  foreach(var bounds in new[]{new Viewport{X0=double.NaN},new Viewport{X1=double.PositiveInfinity},new Viewport{X0=-17},new Viewport{Y1=18},new Viewport{X0=.7,X1=.6},new Viewport{Y0=.5,Y1=.5001}}){
+   bool rejected=false;try{NativeGridMapping.ToReference(new Viewport(),bounds);}catch(ArgumentException){rejected=true;}Assert(rejected);
+  }
+ });
  Console.WriteLine("RESULT "+pass+" passed, "+fail+" failed");return fail==0?0:1;
  }
 }

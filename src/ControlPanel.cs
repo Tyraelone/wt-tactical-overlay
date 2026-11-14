@@ -55,7 +55,7 @@ namespace WtTactical {
             this.library=library;this.root=root;userFile=Path.Combine(root,"user-data","annotations.json");
             string catalogFile=Path.Combine(root,"data","recognition.json");recognition=File.Exists(catalogFile)?JsonStore.Load<RecognitionCatalog>(catalogFile):new RecognitionCatalog();
             live.IsChecked=connectLive;liveGate.SetEnabled(connectLive);
-            Title="WT 战术地图台 V0.5.0";Width=1080;Height=860;MinWidth=950;MinHeight=700;WindowStartupLocation=WindowStartupLocation.CenterScreen;
+            Title="WT 战术地图台 V0.5.1";Width=1080;Height=860;MinWidth=950;MinHeight=700;WindowStartupLocation=WindowStartupLocation.CenterScreen;
             Background=new SolidColorBrush(Color.FromRgb(13,21,31));Foreground=Brushes.White;FontFamily=new FontFamily("Microsoft YaHei UI");FontSize=12;
             ApplyTheme();LoadUser();Content=BuildLayout();foreach(var input in new[]{x0,y0,x1,y1})input.IsReadOnly=live.IsChecked==true;
             mapSelect.ItemsSource=BrowsableMaps().OrderBy(m=>m.Status=="no_tactical_source").ThenBy(m=>m.English).ToList();
